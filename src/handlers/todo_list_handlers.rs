@@ -30,6 +30,25 @@ async fn read_list(req: web::Path<ListInfo>) -> HttpResponse {
     HttpResponse::Created().json(list.unwrap())
 }
 
+async fn update_list(req: web::Json<TodoList>) -> HttpResponse {
+    let mut list = req.0.clone();
+    if let Some(err) = list.update() {
+        return HttpResponse::InternalServerError().body(err.to_string());
+    }
+
+    HttpResponse::Ok().json(list)
+}
+
+async fn delete_list(req: web::Path<ListInfo>) -> HttpResponse {
+
+    //check if the list is found
+    if TodoList::is_exist(req.list_id) {
+        HttpResponse::Ok().finish()
+    } else {
+        HttpResponse::NotFound().body("This list is not found")
+    }
+}
+
 
 pub fn todo_list_config(cfg: &mut web::ServiceConfig) {
     
@@ -44,11 +63,11 @@ pub fn todo_list_config(cfg: &mut web::ServiceConfig) {
     )
     .service(
         web::resource("/update")
-            .route(web::get().to(|| HttpResponse::Ok().body("update"))),
+            .route(web::put().to(update_list)),
     )
     .service(
-        web::resource("/delete")
-            .route(web::get().to(|| HttpResponse::Ok().body("delete"))),
+        web::resource("/delete/{list_id}")
+            .route(web::get().to(delete_list)),
     )
     ;
 }

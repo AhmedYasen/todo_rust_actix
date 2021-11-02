@@ -2,14 +2,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TodoList {
-    #[serde(skip_deserializing)]
+    #[serde(default)]
     pub id: u16,
     pub title: String,
 }
 
 impl TodoList {
     pub fn create(&mut self) -> Option<std::io::Error> {
-        self.id = 123;
         println!("create\r\n{:#?}", self);
         None
     }
@@ -27,5 +26,9 @@ impl TodoList {
     pub fn delete(&mut self) -> Option<std::io::Error> {
         println!("create\r\n{:#?}", self);
         None
+    }
+
+    pub fn is_exist(id: u16) -> bool {
+        true
     }
 }
