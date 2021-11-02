@@ -1,24 +1,66 @@
 use actix_web::{web, HttpResponse};
 
-// this function could be located in a different module
+use crate::models::todo_item::TodoItem;
+
+
+async fn create_item(item: web::Json<TodoItem>) -> HttpResponse {
+    let mut item: TodoItem = item.0.clone();
+
+    if let Some(err) = item.create() {
+        return HttpResponse::InternalServerError().body(err.to_string());
+    }
+
+    HttpResponse::Created().json(item)
+}
+
+
+struct ItemInfo {
+    item_id: u16,
+}
+async fn read_item(item: web::Path<ItemInfo>) -> HttpResponse {
+    let item = TodoItem::read(item.0.item_id);
+
+    if let Err(err) = item {
+        return HttpResponse::InternalServerError().body(err.to_string());
+    }
+
+    HttpResponse::Ok().json(item.unwrap())
+}
+
+async fn update_item(item: web::Json<TodoItem>) -> HttpResponse {
+    let mut item: TodoItem = item.0.clone();
+
+    if let Some(err) = item.update() {
+        return HttpResponse::InternalServerError().body(err.to_string());
+    }
+
+    HttpResponse::Created().json(item)
+}
+
+async fn delete_item(item: web::Path<ItemInfo>) -> HttpResponse {
+    TodoItem::delete(item.0.item_id);
+    HttpResponse::Ok().finish()
+
+}
+
 pub fn todo_item_config(cfg: &mut web::ServiceConfig) {
     
     cfg
     .service(
         web::resource("/create")
-            .route(web::post().to(|| HttpResponse::Ok().body("create"))),
+            .route(web::post().to(create_item)),
     )
     .service(
-        web::resource("/read")
-            .route(web::get().to(|| HttpResponse::Ok().body("read"))),
+        web::resource("/read/{item_id}")
+            .route(web::get().to(read_item)),
     )
     .service(
         web::resource("/update")
-            .route(web::get().to(|| HttpResponse::Ok().body("update"))),
+            .route(web::put().to(update_item)),
     )
     .service(
-        web::resource("/delete")
-            .route(web::get().to(|| HttpResponse::Ok().body("delete"))),
+        web::resource("/delete/{item_id}")
+            .route(web::delete().to(delete_item)),
     )
     ;
 }
