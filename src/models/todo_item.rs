@@ -6,7 +6,9 @@ pub struct TodoItem {
     #[serde(default)]
     pub id: u16,
     pub title: String,
-    pub description: String,
+    #[serde(default)]
+    pub description: Option<String>,
+    #[serde(default)]
     pub checked: bool,
     pub todo_list_id: u16,
 }
@@ -21,7 +23,7 @@ impl TodoItem {
         Ok(TodoItem {
             id,
             title: "a previously stored item".to_string(),
-            description: "description".to_string(),
+            description: Some("description".to_string()),
             checked: false,
             todo_list_id: 1,
         })
@@ -32,13 +34,12 @@ impl TodoItem {
     }
     pub fn delete(id: u16) {
         println!("deleted: {:#?}", id);
-        None
     }
     pub fn read_all_by_list_id(list_id: u16) -> Option<Vec<Self>> {
         Some(
             vec![
-                TodoItem { id: 0, title: "ToDo 1".to_string(), description: "ToDo 1 description".to_string(), checked: true, todo_list_id: 1 },
-                TodoItem { id: 1, title: "ToDo 2".to_string(), description: "ToDo 2 description".to_string(), checked: true, todo_list_id: 1 },
+                TodoItem { id: 0, title: "ToDo 1".to_string(), description: Some("ToDo 1 description".to_string()), checked: true, todo_list_id: 1 },
+                TodoItem { id: 1, title: "ToDo 2".to_string(), description: Some("ToDo 2 description".to_string()), checked: true, todo_list_id: 1 },
             ]
         )
     }

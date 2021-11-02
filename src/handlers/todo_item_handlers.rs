@@ -35,7 +35,7 @@ async fn update_item(item: web::Json<TodoItem>) -> HttpResponse {
         return HttpResponse::InternalServerError().body(err.to_string());
     }
 
-    HttpResponse::Created().json(item)
+    HttpResponse::Ok().json(item)
 }
 
 async fn delete_item(item: web::Path<ItemInfo>) -> HttpResponse {
