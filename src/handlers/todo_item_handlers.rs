@@ -1,4 +1,5 @@
 use actix_web::{web, HttpResponse};
+use serde::Deserialize;
 
 use crate::models::todo_item::TodoItem;
 
@@ -13,7 +14,7 @@ async fn create_item(item: web::Json<TodoItem>) -> HttpResponse {
     HttpResponse::Created().json(item)
 }
 
-
+#[derive(Deserialize)]
 struct ItemInfo {
     item_id: u16,
 }
