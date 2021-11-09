@@ -78,7 +78,7 @@ pub fn todo_list_config(cfg: &mut web::ServiceConfig) {
     )
     .service(
         web::resource("/delete/{list_id}")
-            .route(web::get().to(delete_list)),
+            .route(web::delete().to(delete_list)),
     )
     ;
 }
